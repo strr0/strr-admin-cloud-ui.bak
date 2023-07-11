@@ -11,6 +11,7 @@
 import login from './components/login.vue'
 import auth from './components/auth.vue'
 import { setToken, getToken, removeToken } from '../../utils/auth'
+import { securityToken } from '../../utils/api'
 export default {
   components: { login, auth },
   name: 'Login',
@@ -30,13 +31,14 @@ export default {
     let code = this.$route.query.code
     if (code) {
       removeToken()
-      this.postRequest('/oauth2/token', {
+      securityToken({
         grant_type: 'authorization_code',
         scope: 'web',
         client_id: 'STRR_CLIENT',
         client_secret: 'STRR_SECRET',
         code: code
-      }).then(resp => {
+      }).then(response => {
+        let resp = response.data
         if(resp && resp.access_token) {
           this.$message({
             message: '登录成功',

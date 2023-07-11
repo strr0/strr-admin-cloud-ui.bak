@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import { securityLogin } from '../../../utils/api'
 export default {
   name: 'toLogin',
   data() {
@@ -39,10 +40,12 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if(valid) {
           this.loading = true;
-          this.postRequest('/security/login',  {username: 'admin', password: 'abc123'})
-          .then(resp => {
+          securityLogin({username: 'admin', password: 'abc123'})
+          .then(response => {
+            this.loading = false
+            let resp = response.data
             if (resp && resp.success) {
-              //window.location.href = 'http://localhost:8081/oauth2/authorize?response_type=code&client_id=STRR_CLIENT&scope=web'
+              this.$store.commit('login', resp.data)
               this.$emit('pass')
             } else {
               this.$alert('用户名或密码错误')

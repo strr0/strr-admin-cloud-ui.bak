@@ -1,9 +1,13 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
-import { getToken } from './auth'
+import { getToken, removeToken } from './auth'
 
 let request = axios.create({
   baseURL: '/api'
+})
+
+let security = axios.create({
+  baseURL: '/security'
 })
 
 // request拦截器
@@ -35,7 +39,11 @@ request.interceptors.response.use(
     }
   },
   error => {
-    Message.error({message: error.response.data.message})
+    let response = error.response
+    if (response.status && response.status == 401) {
+      removeToken()
+    }
+    Message.error({message: response.data.message})
     return
   }
 )
@@ -64,6 +72,41 @@ export const putRequest = (url, params) => {
 
 export const deleteRequest = url => {
   return request.delete(url)
+}
+
+// 登录
+export const securityLogin = (params) => {
+  return security.post('/login', params, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    transformRequest: [ transformRequest ]
+  })
+}
+
+// 授权
+export const securityConsent = (params) => {
+  return security.post('/oauth2/authorize', params, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    transformRequest: [ transformRequest ]
+  })
+}
+
+// 获取授权信息
+export const securityAuthorize = () => {
+  return security.get('/oauth2/authorize?response_type=code&client_id=STRR_CLIENT&scope=web')
+}
+
+// 获取token
+export const securityToken = (params) => {
+  return security.post('/oauth2/token', params, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    transformRequest: [ transformRequest ]
+  })
 }
 
 export const transformRequest = data => {

@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { securityAuthorize, securityConsent } from '../../../utils/api'
 export default {
   name: 'toAuth',
   data() {
@@ -50,7 +51,8 @@ export default {
     },
     handleConsent() {
       this.loading = true
-      this.postRequest('/oauth2/authorize', {...this.authForm, scope: this.checkScopes}).then(resp => {
+      securityConsent({...this.authForm, scope: this.checkScopes}).then(response => {
+        let resp = response.data
         if (resp.code === 302) {
           location.href = resp.data
         }
@@ -60,7 +62,8 @@ export default {
       })
     },
     oauth2Authorize() {
-      this.getRequest('/oauth2/authorize?response_type=code&client_id=STRR_CLIENT&scope=web').then(resp => {
+      securityAuthorize().then(response => {
+        let resp = response.data
         if (resp.code === 200) {
           this.principalName = resp.data.principalName
           this.authForm.client_id = resp.data.clientId

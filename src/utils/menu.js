@@ -6,9 +6,7 @@ export const initMenu = (router, store) => {
   }
   getRequest('/admin/sysAuthority/userMenuTree').then(resp => {
     if(resp && resp.success) {
-      let user = resp.data.user
-      let menus = resp.data.menus
-      store.commit('login', user);
+      let menus = resp.data
       let routes = []
       let menuTree = buildMenuTree(menus, routes)
       let home = {
