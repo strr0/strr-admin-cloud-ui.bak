@@ -109,6 +109,11 @@ export const securityToken = (params) => {
   })
 }
 
+// 注销
+export const securityLogout = () => {
+  return security.get('/logout')
+}
+
 export const transformRequest = data => {
   let ret = '';
   for (let key in data) {
