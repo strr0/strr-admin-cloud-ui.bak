@@ -74,6 +74,15 @@
 </template>
 
 <script>
+  import {
+    pageRole,
+    listAuthority,
+    saveRole,
+    updateRole,
+    listRelByRid,
+    removeRole,
+    updateRel
+  } from '../../../apis/admin'
   export default {
     name: 'RoleView',
     data() {
@@ -125,8 +134,7 @@
       },
       initRole() {
         this.loading = true
-        let url = '/admin/sysRole/page?page=' + this.page + '&size=' + this.size
-        this.getRequest(url).then(resp => {
+        pageRole({page: this.page, size: this.size}).then(resp => {
           this.loading = false
           if(resp) {
             this.roleList = resp.content
@@ -135,8 +143,7 @@
         })
       },
       initAuthority() {
-        this.getRequest('/admin/sysAuthority/menuTree')
-        .then(resp => {
+        listAuthority().then(resp => {
           if(resp && resp.success) {
             this.authorityList = resp.data
           }
@@ -155,7 +162,7 @@
         this.$refs.role.validate(valid => {
           if(valid) {
             if (this.role.id) {
-              this.putRequest('/admin/sysRole/update', this.role).then(resp => {
+              updateRole(this.role).then(resp => {
                 if(resp && resp.success) {
                   this.$message({
                     message: '修改成功',
@@ -166,7 +173,7 @@
                 }
               })
             } else {
-              this.postRequest('/admin/sysRole/save', this.role).then(resp => {
+              saveRole(this.role).then(resp => {
                 if(resp && resp.success) {
                   this.$message({
                     message: '保存成功',
@@ -192,7 +199,7 @@
         this.title = '权限控制'
         this.role = this.currentRow
         this.treeData = []
-        this.getRequest('/admin/sysRole/listRelByRid?rid=' + this.role.id).then(resp => {
+        listRelByRid(this.role.id).then(resp => {
           if (resp && resp.success) {
             this.treeData = this.authorityList
             this.newAids = resp.data
@@ -234,7 +241,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.deleteRequest('/admin/sysRole/removeInfo?id=' + this.currentRow.id).then((resp) => {
+          removeRole(this.currentRow.id).then((resp) => {
             if (resp) {
               this.$message({
                 message: '删除成功',
@@ -259,7 +266,7 @@
         form.rid = this.role.id
         form.oldAids = this.oldAids
         form.newAids = halfChecked.concat(checked)
-        this.postRequest('/admin/sysRole/updateRel', form).then(resp => {
+        updateRel(form).then(resp => {
           if(resp && resp.success) {
             this.$message({
               message: '修改成功',

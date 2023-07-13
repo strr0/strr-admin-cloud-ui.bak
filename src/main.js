@@ -5,21 +5,9 @@ import router from './router'
 import store from './store'
 import App from './App.vue'
 import { getToken } from './utils/auth'
+import { initMenu } from './utils/menu'
 
 Vue.use(ElementUI);
-
-import {
-  getRequest,
-  postRequest,
-  putRequest,
-  deleteRequest,
-} from './utils/api'
-import { initMenu } from './utils/menu'
-Vue.prototype.getRequest = getRequest
-Vue.prototype.postRequest = postRequest
-Vue.prototype.putRequest = putRequest
-Vue.prototype.deleteRequest = deleteRequest
-
 Vue.config.productionTip = false
 
 router.beforeEach((to, from, next) => {

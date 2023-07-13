@@ -16,7 +16,7 @@
 
 <script>
 import { setToken, getToken, removeToken } from '../../utils/auth'
-import { securityLogin, securityToken } from '../../utils/api'
+import { securityLogin, securityToken } from '../../apis/auth'
 export default {
   name: 'Login',
   data() {
@@ -50,8 +50,7 @@ export default {
         client_id: 'STRR_CLIENT',
         client_secret: 'STRR_SECRET',
         code: code
-      }).then(response => {
-        let resp = response.data
+      }).then(resp => {
         if(resp && resp.access_token) {
           this.$message({
             message: '登录成功',
@@ -73,12 +72,11 @@ export default {
         if(valid) {
           this.loading = true;
           securityLogin(this.loginForm)
-          .then(response => {
+          .then(resp => {
             this.loading = false
-            let resp = response.data
             if (resp && resp.success) {
               this.$store.commit('login', resp.data)
-              location.href = '/security/oauth2/authorize?response_type=code&client_id=STRR_CLIENT&scope=web'
+              location.href = '/api/authservice/oauth2/authorize?response_type=code&client_id=STRR_CLIENT&scope=web'
             } else {
               this.$alert('用户名或密码错误')
             }

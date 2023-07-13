@@ -139,6 +139,12 @@
 </template>
 
 <script>
+  import {
+    listAuthority,
+    saveAuthority,
+    updateAuthority,
+    deleteAuthority
+  } from '../../../apis/admin'
   export default {
     name: 'AuthorityView',
     data() {
@@ -189,7 +195,7 @@
       },
       initAuthority() {
         this.loading = true
-        this.getRequest('/admin/sysAuthority/menuTree').then(resp => {
+        listAuthority().then(resp => {
           this.loading = false
           if(resp && resp.success) {
             this.authorityList = resp.data
@@ -215,7 +221,7 @@
             let form = this.authority
             delete form.children
             if (form.id) {
-              this.putRequest('/admin/sysAuthority/update', this.authority).then(resp => {
+              updateAuthority(this.authority).then(resp => {
                 if(resp && resp.success) {
                   this.$message({
                     message: '修改成功',
@@ -226,7 +232,7 @@
                 }
               })
             } else {
-              this.postRequest('/admin/sysAuthority/save', this.authority).then(resp => {
+              saveAuthority(this.authority).then(resp => {
                 if(resp && resp.success) {
                   this.$message({
                     message: '保存成功',
@@ -300,7 +306,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.deleteRequest('/admin/sysAuthority/removeInfo?id=' + this.currentRow.id).then((resp) => {
+          deleteAuthority(this.currentRow.id).then((resp) => {
             if (resp && resp.success) {
               this.$message({
                 message: '删除成功',

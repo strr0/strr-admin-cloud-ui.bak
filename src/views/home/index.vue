@@ -37,7 +37,7 @@
 <script>
 import mains from './components/mains.vue'
 import navbar from './components/navbar.vue'
-import { securityLogout } from '../../utils/api'
+import { securityLogout } from '../../apis/auth'
 import { removeToken } from '../../utils/auth'
 export default {
   components: { navbar, mains },
@@ -80,8 +80,7 @@ export default {
             type: 'warning'
           })
           .then(() => {
-            securityLogout().then(response => {
-              let resp = response.data
+            securityLogout().then(resp => {
               if (resp && resp.success) {
                 this.$message({
                   message: '已注销登录',

@@ -122,6 +122,13 @@
 </template>
 
 <script>
+  import {
+    pageUser,
+    listRole,
+    saveUser,
+    listRelByUid,
+    removeUser
+  } from '../../../apis/admin'
   export default {
     name: 'User',
     data() {
@@ -187,8 +194,7 @@
       },
       initUser() {
         this.loading = true
-        let url = '/admin/sysUser/page?page=' + this.page + '&size=' + this.size
-        this.getRequest(url).then(resp => {
+        pageUser({page: this.page, size: this.size}).then(resp => {
           this.loading = false
           if(resp) {
             this.userList = resp.content
@@ -197,8 +203,7 @@
         })
       },
       initRole() {
-        this.getRequest('/admin/sysRole/list')
-        .then(resp => {
+        listRole().then(resp => {
           if(resp && resp.success) {
             this.roleList = resp.data
           }
@@ -224,7 +229,7 @@
             delete form.loginTime
             form.oldRids = this.oldRids
             form.newRids = this.newRids
-            this.postRequest('/admin/sysUser/saveInfo', form).then(resp => {
+            saveUser(form).then(resp => {
               if(resp && resp.success) {
                 this.$message({
                   message: '保存成功',
@@ -248,7 +253,7 @@
         }
         this.title = '查看用户信息'
         this.user = this.currentRow
-        this.getRequest('/admin/sysUser/listRelByUid?uid=' + this.currentRow.id).then(resp => {
+        listRelByUid(this.currentRow.id).then(resp => {
           if(resp && resp.success) {
             this.newRids = resp.data
           }
@@ -272,7 +277,7 @@
         }
         this.title = '修改用户信息'
         this.user = this.currentRow
-        this.getRequest('/admin/sysUser/listRelByUid?uid=' + this.currentRow.id).then(resp => {
+        listRelByUid(this.currentRow.id).then(resp => {
           if(resp && resp.success) {
             this.newRids = resp.data
             this.oldRids = resp.data
@@ -294,7 +299,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.deleteRequest('/admin/sysUser/removeInfo?id=' + this.currentRow.id).then((resp) => {
+          removeUser(this.currentRow.id).then((resp) => {
             if (resp) {
               this.$message({
                 message: '删除成功',

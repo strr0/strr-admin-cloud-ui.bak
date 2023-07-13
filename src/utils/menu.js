@@ -1,10 +1,10 @@
-import { getRequest } from "./api"
+import { userMenuTree } from "../apis/admin"
 
 export const initMenu = (router, store) => {
   if(store.state.routes.length > 0) {
     return  
   }
-  getRequest('/admin/sysAuthority/userMenuTree').then(resp => {
+  userMenuTree().then(resp => {
     if(resp && resp.success) {
       let menus = resp.data
       let routes = []
