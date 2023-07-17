@@ -10,10 +10,10 @@
             <span>
               <div class="settings-menu">
                 <div class="settings-menu-item settings-p8">
-                  <el-avatar>{{ user.username }}</el-avatar>
+                  <el-avatar>{{ username || 'unknown' }}</el-avatar>
                 </div>
                 <div class="settings-menu-item settings-h60">
-                  <span>{{ user.nickname }}</span>
+                  <span>{{ username || '未登录' }}</span>
                   <i class="el-icon-arrow-down el-icon--right home_userinfo" />
                 </div>
               </div>
@@ -38,7 +38,7 @@
 import mains from './components/mains.vue'
 import navbar from './components/navbar.vue'
 import { securityLogout } from '../../apis/auth'
-import { removeToken } from '../../utils/auth'
+import { setCookie, getCookie } from '../../utils/auth'
 export default {
   components: { navbar, mains },
   data() {
@@ -46,12 +46,7 @@ export default {
       routes: [],
       currentRoute: null,
       active: null,
-      // user: { username: '未登录' }
-    }
-  },
-  computed: {
-    user() {
-      return this.$store.state.user
+      username: ''
     }
   },
   watch: {
@@ -66,6 +61,9 @@ export default {
       },
       deep: true
     }
+  },
+  mounted() {
+    this.username = getCookie('user')
   },
   methods: {
     showSub(item) {
@@ -86,7 +84,7 @@ export default {
                   message: '已注销登录',
                   type: 'success'
                 })
-                removeToken()
+                setCookie('user', '')
                 this.$store.commit('logout')
                 this.$router.replace('/')
               }

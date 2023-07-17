@@ -1,6 +1,6 @@
 import request from './index'
 
-const BASE = '/adminservice'
+const BASE = '/api/adminservice'
 
 // 权限
 export const listAuthority = () => {

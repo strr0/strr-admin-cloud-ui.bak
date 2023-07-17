@@ -1,9 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
-import { getToken, removeToken } from '../utils/auth'
 
 const request = axios.create({
-  baseURL: '/api',
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded'
   },
@@ -21,10 +19,6 @@ const request = axios.create({
 // request拦截器
 request.interceptors.request.use(
   config => {
-    let token = getToken()
-    if (token) {
-      config.headers['Authorization'] = 'Bearer ' + token // 让每个请求携带自定义token 请根据实际情况自行修改
-    }
     return config
   },
   error => {
@@ -38,7 +32,6 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   response => {
     if(response.status && response.status == 200) {
-      //Message.success({message: response.data.message})
       return response.data
     }
     else {
@@ -48,9 +41,6 @@ request.interceptors.response.use(
   },
   error => {
     let response = error.response
-    if (response.status && response.status == 401) {
-      removeToken()
-    }
     Message.error({message: response.data.message})
     return
   }

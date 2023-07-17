@@ -4,7 +4,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import router from './router'
 import store from './store'
 import App from './App.vue'
-import { getToken } from './utils/auth'
+import { getCookie } from './utils/auth'
 import { initMenu } from './utils/menu'
 
 Vue.use(ElementUI);
@@ -15,7 +15,7 @@ router.beforeEach((to, from, next) => {
     next()
   }
   else {
-    if(getToken()) {
+    if(getCookie('user')) {
       initMenu(router, store)
     }
     next()

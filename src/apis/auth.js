@@ -1,6 +1,6 @@
 import request from './index'
 
-const BASE = '/authservice'
+const BASE = '/security'
 
 // 登录
 export const securityLogin = (params) => {

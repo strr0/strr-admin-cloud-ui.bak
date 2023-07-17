@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { setToken, getToken, removeToken } from '../../utils/auth'
+import { getCookie, setCookie } from '../../utils/auth'
 import { securityLogin, securityToken } from '../../apis/auth'
 export default {
   name: 'Login',
@@ -35,35 +35,11 @@ export default {
     }
   },
   mounted() {
-    let token = getToken()
-    if (token) {
+    let user = getCookie('user')
+    if (user) {
       let path = this.$route.query.redirect;
       this.$router.replace((path == '/' || path == undefined) ? '/home' : path)
       return
-    }
-    // 获取token
-    let code = this.$route.query.code
-    if (code) {
-      securityToken({
-        grant_type: 'authorization_code',
-        scope: 'web',
-        client_id: 'STRR_CLIENT',
-        client_secret: 'STRR_SECRET',
-        code: code
-      }).then(resp => {
-        if(resp && resp.access_token) {
-          this.$message({
-            message: '登录成功',
-            type: 'success'
-          })
-          this.$store.commit('token', resp.access_token)
-          setToken(resp.access_token)
-          let path = this.$route.query.redirect;
-          this.$router.replace((path == '/' || path == undefined) ? '/home' : path)
-        } else {
-          this.$alert('授权失败')
-        }
-      })
     }
   },
   methods: {
@@ -75,8 +51,9 @@ export default {
           .then(resp => {
             this.loading = false
             if (resp && resp.success) {
-              this.$store.commit('login', resp.data)
-              location.href = '/api/authservice/oauth2/authorize?response_type=code&client_id=STRR_CLIENT&scope=web'
+              // this.$store.commit('login', resp.data)
+              setCookie('user', resp.data.username)
+              location.href = 'http://127.0.0.1:8000'
             } else {
               this.$alert('用户名或密码错误')
             }

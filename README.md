@@ -6,11 +6,11 @@
 ### 使用
 1. 拉取代码
 ```
-git clone https://github.com/strr0/strr-admin-ui.git
+git clone https://github.com/strr0/strr-admin-cloud-ui.git
 ```
 2. 新建项目引入依赖
 ```
-yarn add ../strr-admin-ui
+yarn add ../strr-admin-cloud-ui
 ```
 3. 修改配置
 ```
@@ -30,7 +30,7 @@ body {
 ```
 main.js
 import App from './App.vue'
-import { Vue, router, store } from 'strr-admin-ui'
+import { Vue, router, store } from 'strr-admin-cloud-ui'
 
 new Vue({
   router,
@@ -47,11 +47,19 @@ module.exports = defineConfig({
   lintOnSave: false,
   devServer: {
     proxy: {
-      '/': {
-        target: 'http://localhost:8081',
+      '/api': {
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
         pathRewrite: {
-          '^/': ''
+          '^/api': ''
+        },
+        ws: false
+      },
+      '/security': {
+        target: 'http://localhost:9000',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/security': ''
         },
         ws: false
       }
