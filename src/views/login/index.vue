@@ -53,7 +53,7 @@ export default {
             if (resp && resp.success) {
               // this.$store.commit('login', resp.data)
               setCookie('user', resp.data.username)
-              location.href = 'http://127.0.0.1:8000'
+              location.href = process.env.VUE_APP_GATEWAY_URL
             } else {
               this.$alert('用户名或密码错误')
             }
