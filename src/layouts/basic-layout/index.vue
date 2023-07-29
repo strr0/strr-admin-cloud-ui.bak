@@ -3,7 +3,7 @@
     <el-header class="header">
       <el-row>
         <el-col :span="22">
-          <navbar :items="routes" :active="active" @showSub="showSub" />
+          <s-navbar :items="routes" :active="active" @showSub="showSub" />
         </el-col>
         <el-col :span="2">
           <el-dropdown class="settings" @command='commandHandler'>
@@ -29,18 +29,19 @@
       </el-row>
     </el-header>
     <el-container>
-      <mains :item="currentRoute" />
+      <s-main :item="currentRoute" />
     </el-container>
   </el-container>
 </template>
 
 <script>
-import mains from './components/mains.vue'
-import navbar from './components/navbar.vue'
+import SNavbar from '../components/s-navbar'
+import SMain from '../components/s-main'
 import { securityLogout } from '../../apis/auth'
 import { setCookie, getCookie } from '../../utils/auth'
 export default {
-  components: { navbar, mains },
+  name: 'BasicLayout',
+  components: { SNavbar, SMain },
   data() {
     return {
       routes: [],

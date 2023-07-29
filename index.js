@@ -21,4 +21,10 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-export { Vue, router, store }
+export function setupApp(app) {
+  new Vue({
+    router,
+    store,
+    render: h => h(app)
+  }).$mount('#app')
+}

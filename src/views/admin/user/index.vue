@@ -7,7 +7,7 @@
       </div>
       <div>
         <el-button v-for="item in btnList" :key="item.id" :type="item.type" :icon="item.icon" @click="handler(item.func)">
-          {{ item.name }}
+          {{ item.title }}
         </el-button>
       </div>
     </div>

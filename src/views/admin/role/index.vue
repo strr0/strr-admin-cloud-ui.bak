@@ -7,7 +7,7 @@
       </div>
       <div>
         <el-button v-for="item in btnList" :key="item.id" :type="item.type" :icon="item.icon" @click="handler(item.func)">
-          {{ item.name }}
+          {{ item.title }}
         </el-button>
       </div>
     </div>
@@ -61,9 +61,10 @@
           show-checkbox
           node-key="id"
           ref="tree"
+          default-expand-all
           :default-checked-keys="newAids"
           :data="treeData"
-          :props="{ label: 'name', children: 'children' }" />
+          :props="{ label: 'title', children: 'children' }" />
         <div style="display: flex; justify-content: flex-end">
           <el-button @click="cancelUpdate">取消修改</el-button>
           <el-button type="primary" @click="updateRel()">确认修改</el-button>

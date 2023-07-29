@@ -7,20 +7,20 @@
       </div>
       <div>
         <el-button v-for="item in btnList" :key="item.id" :type="item.type" :icon="item.icon" @click="handler(item.func)">
-          {{ item.name }}
+          {{ item.title }}
         </el-button>
       </div>
     </div>
     <!--  权限列表  -->
     <div style="margin-top: 10px">
       <el-table :data="authorityList" stripe border v-loading="loading" style="width: 100%"
-        row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+        row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" default-expand-all
         highlight-current-row @current-change="selectCurrentRow">
         <el-table-column type="selection" width="50" />
         <el-table-column prop="url" label="请求路径" />
         <el-table-column prop="path" label="路由地址" />
         <el-table-column prop="name" label="名称" />
-        <el-table-column prop="component" label="组件" />
+        <el-table-column prop="title" label="标题" />
         <el-table-column label="图标">
           <template slot-scope="scope">
             <i :class="scope.row.icon" />
@@ -39,7 +39,10 @@
       <el-dialog :title="title" :visible.sync="showModalVisible" width="60%">
         <el-descriptions :column="2" border>
           <el-descriptions-item>
-            <template slot="label">权限名称</template>{{ authority.name }}
+            <template slot="label">名称</template>{{ authority.name }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">标题</template>{{ authority.title }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template slot="label">路由地址</template>{{ authority.path }}
@@ -51,7 +54,7 @@
             <template slot="label">图标</template><i :class="authority.icon" />
           </el-descriptions-item>
           <el-descriptions-item>
-            <template slot="label">父菜单</template>{{ authority.parentName }}
+            <template slot="label">父菜单</template>{{ authority.parentTitle }}
           </el-descriptions-item>
         </el-descriptions>
       </el-dialog>
@@ -62,14 +65,26 @@
         <el-form :model="authority" ref="authority" :rules="rules" label-position="right" label-width="20%">
           <el-row>
             <el-col :span="12">
-              <el-form-item prop="name" label="权限名称">
-                <el-input v-model="authority.name" placeholder="请输入权限名称"
+              <el-form-item prop="name" label="名称">
+                <el-input v-model="authority.name" placeholder="请输入名称"
+                  prefix-icon="el-icon-edit" style="width: 80%" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item prop="title" label="标题">
+                <el-input v-model="authority.title" placeholder="请输入标题"
                   prefix-icon="el-icon-edit" style="width: 80%" />
               </el-form-item>
             </el-col>
             <el-col :span="12" v-show="authority.isMenu">
               <el-form-item prop="path" label="路由地址">
                 <el-input v-model="authority.path" placeholder="请输入路由地址"
+                  prefix-icon="el-icon-edit" style="width: 80%" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-show="authority.isMenu">
+              <el-form-item prop="url" label="请求路径">
+                <el-input v-model="authority.url" placeholder="请输入请求路径"
                   prefix-icon="el-icon-edit" style="width: 80%" />
               </el-form-item>
             </el-col>
@@ -84,14 +99,6 @@
                   >
                   </el-option>
                 </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12" v-show="authority.isMenu">
-              <el-form-item prop="url" label="请求路径">
-                <el-input v-model="authority.url" placeholder="请输入请求路径"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
               </el-form-item>
             </el-col>
             <el-col :span="12" v-show="!authority.isMenu">
@@ -114,11 +121,9 @@
                   prefix-icon="el-icon-edit" style="width: 80%" />
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row>
             <el-col :span="12">
               <el-form-item label="父菜单">
-                <el-input v-model="authority.parentName" style="width: 80%" readonly />
+                <el-input v-model="authority.parentTitle" style="width: 80%" readonly />
                 <input v-model="authority.parentId" type="hidden" />
               </el-form-item>
             </el-col>
@@ -161,6 +166,7 @@
           url: '',
           path: '',
           name: '',
+          title: '',
           component: '',
           icon: '',
           parentId: '',
@@ -172,7 +178,8 @@
         rules: {
           url: null,
           path: null,
-          name: [{required: true, message: '请输入权限名称', trigger: 'blur'}],
+          name: [{required: true, message: '请输入名称', trigger: 'blur'}],
+          title: [{required: true, message: '请输入标题', trigger: 'blur'}],
           component: null,
           icon: null,
           parentId: null
@@ -208,6 +215,7 @@
           url: '',
           path: '',
           name: '',
+          title: '',
           component: '',
           iconCls: '',
           parentId: 0,
@@ -273,9 +281,9 @@
             return
           }
           this.authority.parentId = this.currentRow.id
-          this.authority.parentName = this.currentRow.name
+          this.authority.parentTitle = this.currentRow.title
         } else {
-          this.authority.parentName = ''
+          this.authority.parentTitle = ''
         }
         this.editModalVisible = true
       },

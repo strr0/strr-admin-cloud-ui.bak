@@ -3,7 +3,7 @@
     <template v-if="item && item.children">
       <el-aside style="background: #ececec">
         <el-menu default-active="0" ref="bar" router>
-          <sidebar :items="item.children" />
+          <s-sidebar :items="item.children" />
         </el-menu>
       </el-aside>
     </template>
@@ -18,9 +18,10 @@
 </template>
 
 <script>
-import sidebar from './sidebar.vue'
+import SSidebar from '../s-sidebar'
 export default {
-  components: { sidebar },
+  name: 'SMain',
+  components: { SSidebar },
   props: {
     item: {
       type: Object,

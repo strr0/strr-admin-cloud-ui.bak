@@ -6,13 +6,14 @@
     text-color="#fff"
     active-text-color="#ffd04b">
     <el-menu-item v-for="(item, index) in items" :key="index" :index="index + ''" @click="handleSelect(item)">
-      {{ item.name }}
+      {{ item.title }}
     </el-menu-item>
   </el-menu>
 </template>
 
 <script>
 export default {
+  name: 'SNavbar',
   props: {
     items: {
       type: Array,

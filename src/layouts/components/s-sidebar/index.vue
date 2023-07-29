@@ -4,13 +4,13 @@
       <el-submenu :key="index" :index="index+''" v-if="item.children && item.children.length > 0">
         <template slot="title">
           <i class="el-icon-menu"></i>
-          <span>{{ item.name }}</span>
+          <span>{{ item.title }}</span>
         </template>
-        <sidebar :items="item.children" class="nest-menu" />
+        <s-sidebar :items="item.children" class="nest-menu" />
       </el-submenu>
       <el-menu-item :key="index" :index="index+''" :route="{path: item.path}" @click="handleClick(item)" v-else>
         <i class="el-icon-setting"></i>
-        <span>{{ item.name }}</span>
+        <span>{{ item.title }}</span>
       </el-menu-item>
     </template>
   </div>
@@ -18,6 +18,7 @@
 
 <script>
 export default {
+  name: 'SSidebar',
   props: {
     items: {
       type: Array,
