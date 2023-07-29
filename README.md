@@ -30,13 +30,9 @@ body {
 ```
 main.js
 import App from './App.vue'
-import { Vue, router, store } from 'strr-admin-cloud-ui'
+import { setupApp } from 'strr-admin-cloud-ui'
 
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app')
+setupApp(App)
 ```
 ```
 vue.config.js
