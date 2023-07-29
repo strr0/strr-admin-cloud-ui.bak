@@ -41,7 +41,9 @@ export default {
   created() {
     // 默认勾选第一个二级菜单
     if (this.items && this.items.length > 0) {
-      this.$router.push({path: this.items[0].path})
+      let item = this.items[0]
+      this.$store.commit('setOthers', item.others)
+      this.$router.push({path: item.path})
     }
   },
   methods: {
