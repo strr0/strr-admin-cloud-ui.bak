@@ -85,7 +85,7 @@
     updateRel
   } from '../../../apis/admin'
   export default {
-    name: 'RoleView',
+    name: 'Role',
     data() {
       return {
         //角色列表

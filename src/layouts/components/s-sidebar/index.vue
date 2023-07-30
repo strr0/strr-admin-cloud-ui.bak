@@ -34,7 +34,7 @@ export default {
         if (newV && newV.length > 0) {
           this.$router.push({path: newV[0].path})
         }
-     },
+      },
       deep: true
     }
   },

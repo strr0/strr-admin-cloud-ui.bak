@@ -20,24 +20,15 @@ export const initMenu = (router, store) => {
 export const buildMenuTree = (menus, routes) => {
   let tree = []
   menus.forEach(menu => {
-    let curTree = []
-    menu.children.forEach(child => {
-      let curRoutes = []
-      let node = buildMenuNode(child, curRoutes)
-      routes.push({
-        path: node.path,
-        name: node.name,
-        component: BasicLayout,
-        children: curRoutes
-      })
-      curTree.push(node)
+    let curRoutes = []
+    let node = buildMenuNode(menu, curRoutes)
+    routes.push({
+      path: node.path,
+      name: node.name,
+      component: BasicLayout,
+      children: curRoutes
     })
-    tree.push({
-      path: menu.path,
-      name: menu.name,
-      title: menu.title,
-      children: curTree
-    })
+    tree.push(node)
   })
   return tree
 }

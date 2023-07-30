@@ -37,7 +37,7 @@ export default {
             bar.activeIndex = '0'
           }
         }
-     },
+      },
       deep: true
     }
   },

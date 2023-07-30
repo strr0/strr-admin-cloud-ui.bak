@@ -60,7 +60,8 @@ export default {
           this.currentRoute = newV[0]
         }
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   mounted() {

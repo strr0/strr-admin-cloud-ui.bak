@@ -151,7 +151,7 @@
     deleteAuthority
   } from '../../../apis/admin'
   export default {
-    name: 'AuthorityView',
+    name: 'Authority',
     data() {
       return {
         loading: false,
