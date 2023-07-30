@@ -35,152 +35,30 @@
       </el-table>
     </div>
     <!--  查看  -->
-    <div>
-      <el-dialog :title="title" :visible.sync="showModalVisible" width="60%">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item>
-            <template slot="label">名称</template>
-            <span>{{ authority.name }}</span>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">标题</template>
-            <span>{{ authority.title }}</span>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">菜单类型</template>
-            <span v-if="authority.type == '0'">系统菜单</span>
-            <span v-else-if="authority.type == '1'">目录</span>
-            <span v-else-if="authority.type == '2'">菜单</span>
-            <span v-else-if="authority.type == '3'">按钮</span>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">父菜单</template>{{ authority.parentTitle }}
-          </el-descriptions-item>
-          <el-descriptions-item v-if="authority.type == '2'">
-            <template slot="label">路由地址</template>
-            <span>{{ authority.path }}</span>
-          </el-descriptions-item>
-          <el-descriptions-item v-if="authority.type == '2'">
-            <template slot="label">组件路径</template>
-            <span>{{ authority.url }}</span>
-          </el-descriptions-item>
-          <el-descriptions-item v-if="authority.type == '3'">
-            <template slot="label">颜色</template>
-            <span>{{ authority.color }}</span>
-          </el-descriptions-item>
-          <el-descriptions-item v-if="authority.type == '3'">
-            <template slot="label">图标</template>
-            <i :class="authority.icon" />
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-dialog>
-    </div>
+    <authority-show :authority="authority" :showModalVisible="showModalVisible" @cancel="showModalVisible = false" />
     <!--  添加/修改  -->
-    <div>
-      <el-dialog :title="title" :visible.sync="editModalVisible" width="60%">
-        <el-form :model="authority" ref="authority" :rules="rules" label-position="right" label-width="20%">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item prop="name" label="名称">
-                <el-input v-model="authority.name" placeholder="请输入名称"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item prop="title" label="标题">
-                <el-input v-model="authority.title" placeholder="请输入标题"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item prop="type" label="类型">
-                <el-select v-model="authority.type" placeholder="请选择" style="width: 80%">
-                  <el-option
-                    v-for="(item, index) in typeOptions"
-                    :key="index"
-                    :label="item.name"
-                    :value="item.code"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="父菜单">
-                <el-input v-model="authority.parentTitle" style="width: 80%" readonly />
-                <input v-model="authority.parentId" type="hidden" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" v-show="authority.type == '2'">
-              <el-form-item prop="path" label="路由地址">
-                <el-input v-model="authority.path" placeholder="请输入路由地址"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" v-show="authority.type == '2'">
-              <el-form-item prop="url" label="组件路径">
-                <el-input v-model="authority.url" placeholder="请输入组件路径"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" v-show="authority.type == '3'">
-              <el-form-item prop="color" label="颜色">
-                <el-select v-model="authority.color" placeholder="请选择" style="width: 80%">
-                  <el-option
-                    v-for="(item, index) in colorOptions"
-                    :key="index"
-                    :label="item"
-                    :value="item"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" v-show="authority.type == '3'">
-              <el-form-item prop="icon" label="图标">
-                <el-select v-model="authority.icon" placeholder="请选择" style="width: 80%">
-                  <el-option
-                    v-for="(item, index) in iconOptions"
-                    :key="index"
-                    :label="item"
-                    :value="item"
-                  >
-                    <span class="span-l">{{ item }}</span><span class="span-r"><i :class="item" /></span>
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="editModalVisible = false">取消</el-button>
-          <el-button type="primary" @click="save">确定</el-button>
-        </span>
-      </el-dialog>
-    </div>
+    <authority-edit :authority="authority" :editModalVisible="editModalVisible" @cancel="editModalVisible = false" @refresh="initAuthority" />
   </div>
 </template>
 
 <script>
   import {
     listAuthority,
-    saveAuthority,
-    updateAuthority,
     deleteAuthority
   } from '../../../apis/admin'
+  import AuthorityShow from './components/show.vue'
+  import AuthorityEdit from './components/edit.vue'
+
   export default {
     name: 'Authority',
+    components: { AuthorityShow, AuthorityEdit },
     data() {
       return {
         loading: false,
         btnList: [],
         authorityList: [],
-        title: '',
         showModalVisible: false,
         editModalVisible: false,
-        typeOptions: [{name: '目录', code: '1'}, {name: '菜单', code: '2'}, {name: '按钮', code: '3'}],
-        colorOptions: ['primary', 'success', 'warning', 'danger'],
-        iconOptions: ['el-icon-view', 'el-icon-plus', 'el-icon-edit', 'el-icon-delete'],
         authority: {
           name: '',
           title: '',
@@ -191,14 +69,6 @@
           type: '',
           parentId: '',
           status: 0
-        },
-        rules: {
-          name: [{required: true, message: '请输入名称', trigger: 'blur'}],
-          title: [{required: true, message: '请输入标题', trigger: 'blur'}],
-          url: null,
-          path: null,
-          icon: null,
-          parentId: null
         }
       }
     },
@@ -239,38 +109,6 @@
           status: false
         }
       },
-      save() {
-        this.$refs.authority.validate(valid => {
-          if(valid) {
-            let form = this.authority
-            delete form.children
-            if (form.id) {
-              updateAuthority(this.authority).then(resp => {
-                if(resp && resp.success) {
-                  this.$message({
-                    message: '修改成功',
-                    type: 'success'
-                  })
-                  this.editModalVisible = false
-                  this.initAuthority()
-                }
-              })
-            } else {
-              saveAuthority(this.authority).then(resp => {
-                if(resp && resp.success) {
-                  this.$message({
-                    message: '保存成功',
-                    type: 'success'
-                  })
-                  this.editModalVisible = false
-                  this.initAuthority()
-                }
-              })
-            }
-            
-          }
-        })
-      },
       //查看
       show() {
         if (this.currentRow == null) {
@@ -280,13 +118,11 @@
           })
           return
         }
-        this.title = '查看权限信息'
         this.authority = this.currentRow
         this.showModalVisible = true
       },
       //添加
       add() {
-        this.title = '添加权限信息'
         this.empty()
         if (this.currentRow != null) {
           if (this.currentRow.type == '3') {
@@ -312,7 +148,6 @@
           })
           return
         }
-        this.title = '修改权限信息'
         this.authority = this.currentRow
         this.editModalVisible = true
       },

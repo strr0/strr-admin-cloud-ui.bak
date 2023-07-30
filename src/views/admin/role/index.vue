@@ -30,62 +30,23 @@
         :total="total" />
     </div>
     <!--  添加/修改  -->
-    <div>
-      <el-dialog :title="title" :visible.sync="editModalVisible" width="60%">
-        <el-form :model="role" ref="role" :rules="rules" label-position="left">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item prop="name" label="角色名称">
-                <el-input v-model="role.name" placeholder="请输入角色名称"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item prop="remark" label="角色描述">
-                <el-input v-model="role.remark" placeholder="请输入角色描述"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="editModalVisible = false">取消</el-button>
-          <el-button type="primary" @click="save">确定</el-button>
-        </span>
-      </el-dialog>
-    </div>
+    <role-edit :role="role" :editModalVisible="editModalVisible" @cancel="editModalVisible = false" @refresh="initRole" />
     <!--  权限控制  -->
-    <div>
-      <el-dialog :title="title" :visible.sync="allocModalVisible" width="60%">
-        <el-tree
-          show-checkbox
-          node-key="id"
-          ref="tree"
-          default-expand-all
-          :default-checked-keys="newAids"
-          :data="treeData"
-          :props="{ label: 'title', children: 'children' }" />
-        <div style="display: flex; justify-content: flex-end">
-          <el-button @click="cancelUpdate">取消修改</el-button>
-          <el-button type="primary" @click="updateRel()">确认修改</el-button>
-        </div>  
-      </el-dialog>
-    </div>
+    <role-alloc :role="role" :allocModalVisible="allocModalVisible" @cancel="allocModalVisible = false" />
   </div>
 </template>
 
 <script>
   import {
     pageRole,
-    listAuthority,
-    saveRole,
-    updateRole,
-    listRelByRid,
-    removeRole,
-    updateRel
+    removeRole
   } from '../../../apis/admin'
+  import RoleAlloc from './components/alloc.vue'
+  import RoleEdit from './components/edit.vue'
+
   export default {
     name: 'Role',
+    components: { RoleEdit, RoleAlloc },
     data() {
       return {
         //角色列表
@@ -95,29 +56,19 @@
         total: 0,
         btnList: [],
         roleList: [],
-        authorityList: [],
         //添加修改角色
-        title: '',
         editModalVisible: false,
         allocModalVisible: false,
         role: {
           name: '',
           remark: '',
           status: false
-        },
-        treeData: [],
-        oldAids: [],
-        newAids: [],
-        rules: {
-          name: [{required: true, message: '请输入角色名称', trigger: 'blur'}],
-          remark: [{required: true, message: '请输入角色描述', trigger: 'blur'}]
         }
       }
     },
     mounted() {
       this.initBtn()
       this.initRole()
-      this.initAuthority()
     },
     methods: {
       handler(name) {
@@ -143,50 +94,12 @@
           }
         })
       },
-      initAuthority() {
-        listAuthority().then(resp => {
-          if(resp && resp.success) {
-            this.authorityList = resp.data
-          }
-        })
-      },
       empty() {
         this.role = {
           name: '',
           remark: '',
           status: false
         }
-        this.newAids = []
-        this.oldAids = []
-      },
-      save() {
-        this.$refs.role.validate(valid => {
-          if(valid) {
-            if (this.role.id) {
-              updateRole(this.role).then(resp => {
-                if(resp && resp.success) {
-                  this.$message({
-                    message: '修改成功',
-                    type: 'success'
-                  })
-                  this.editModalVisible = false
-                  this.initRole()
-                }
-              })
-            } else {
-              saveRole(this.role).then(resp => {
-                if(resp && resp.success) {
-                  this.$message({
-                    message: '保存成功',
-                    type: 'success'
-                  })
-                  this.editModalVisible = false
-                  this.initRole()
-                }
-              })
-            }
-          }
-        })
       },
       //权限控制
       alloc() {
@@ -197,21 +110,11 @@
           })
           return
         }
-        this.title = '权限控制'
         this.role = this.currentRow
-        this.treeData = []
-        listRelByRid(this.role.id).then(resp => {
-          if (resp && resp.success) {
-            this.treeData = this.authorityList
-            this.newAids = resp.data
-            this.oldAids = resp.data
-          }
-        })
         this.allocModalVisible = true
       },
       //添加
       add() {
-        this.title = '添加角色信息'
         this.empty()
         this.editModalVisible = true
       },
@@ -224,7 +127,6 @@
           })
           return
         }
-        this.title = '修改角色信息'
         this.role = this.currentRow
         this.editModalVisible = true
       },
@@ -257,30 +159,6 @@
             type: 'info'
           })
         })
-      },
-      //修改权限
-      updateRel() {
-        let tree = this.$refs.tree
-        let halfChecked = tree.getHalfCheckedKeys()
-        let checked = tree.getCheckedKeys()
-        let form = {}
-        form.rid = this.role.id
-        form.oldAids = this.oldAids
-        form.newAids = halfChecked.concat(checked)
-        updateRel(form).then(resp => {
-          if(resp && resp.success) {
-            this.$message({
-              message: '修改成功',
-              type: 'success'
-            })
-            this.currentRow = null
-          }
-        })
-      },
-      //取消
-      cancelUpdate() {
-        this.currentRow = null
-        this.allocModalVisible = false
       }
     }
   }

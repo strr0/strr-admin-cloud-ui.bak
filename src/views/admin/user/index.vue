@@ -34,103 +34,23 @@
         :total="total" />
     </div>
     <!--  查看  -->
-    <div>
-      <el-dialog :title="title" :visible.sync="showModalVisible" width="50%">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item>
-            <template slot="label">用户名</template>{{ user.username }}
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">昵称</template>{{ user.nickname }}
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">电子邮箱</template>{{ user.email }}
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">角色</template>
-            <el-tag size="small"
-              v-for="item in currentRoleList"
-              :key="item.id"
-            >
-              {{ item.name }}
-            </el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">用户头像</template>{{ user.avatar }}
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">个人说明</template>{{ user.remark }}
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-dialog>
-    </div>
+    <user-show :user="user" :showModalVisible="showModalVisible" @cancel="showModalVisible = false" />
     <!--  添加/修改  -->
-    <div>
-      <el-dialog :title="title" :visible.sync="editModalVisible" width="50%">
-        <el-form :model="user" ref="user" :rules="rules" label-position="right" label-width="80px">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item prop="username" label="用户名">
-                <el-input type="text" v-model="user.username" placeholder="请输入用户名"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item prop="nickname" label="昵称">
-                <el-input type="text" v-model="user.nickname" placeholder="请输入昵称"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item prop="email" label="电子邮箱">
-                <el-input type="text" v-model="user.email" placeholder="请输入电子邮箱"
-                  prefix-icon="el-icon-message" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="角色">
-                <el-select v-model="newRids" multiple placeholder="请选择" style="width: 80%">
-                  <el-option v-for="item in roleList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id" />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-form-item prop="avatar" label="用户头像">
-              <el-input v-model="user.avatar" placeholder="请上传用户头像" style="width: 90%" />
-            </el-form-item>
-          </el-row>
-          <el-row>
-            <el-form-item prop="remark" label="个人说明">
-              <el-input type="textarea" v-model="user.remark" placeholder="请输入个人说明"
-                style="width: 90%" />
-            </el-form-item>
-          </el-row>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="editModalVisible = false">取消</el-button>
-          <el-button type="primary" @click="save">确定</el-button>
-        </span>
-      </el-dialog>
-    </div>
+    <user-edit :user="user" :editModalVisible="editModalVisible" @cancel="editModalVisible = false" @refresh="initUser" />
   </div>
 </template>
 
 <script>
   import {
     pageUser,
-    listRole,
-    saveUser,
-    listRelByUid,
     removeUser
   } from '../../../apis/admin'
+  import UserShow from './components/show.vue'
+  import UserEdit from './components/edit.vue'
+
   export default {
     name: 'User',
+    components: { UserShow, UserEdit },
     data() {
       return {
         loading: false,
@@ -139,8 +59,6 @@
         total: 0,
         btnList: [],
         userList: [],
-        roleList: [],
-        title: '',
         showModalVisible: false,
         editModalVisible: false,
         user: {
@@ -151,32 +69,12 @@
           avatar: '',
           remark: '',
           status: false
-        },
-        oldRids: [],
-        newRids: [],
-        rules: {
-          username: [{required: true, message: '请输入用户名', trigger: 'blur'},
-            {min: 4, max: 16, message: '长度必须是4-16个字符'}
-          ],
-          password: null,
-          nickname: [{required: true, message: '请输入昵称', trigger: 'blur'}],
-          email: [{required: true, message: '请输入电子邮箱', trigger: 'blur'},
-            {type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
-          ],
-          avatar: null,
-          remark: null
         }
-      }
-    },
-    computed: {
-      currentRoleList() {
-        return this.roleList.filter(item => this.oldRids.indexOf(item.id) != -1)
       }
     },
     mounted() {
       this.initBtn()
       this.initUser()
-      this.initRole()
     },
     methods: {
       handler(name) {
@@ -202,13 +100,6 @@
           }
         })
       },
-      initRole() {
-        listRole().then(resp => {
-          if(resp && resp.success) {
-            this.roleList = resp.data
-          }
-        })
-      },
       empty() {
         this.user = {
           username: '',
@@ -219,28 +110,6 @@
           remark: '',
           status: false
         }
-        this.oldRids = []
-        this.newRids = []
-      },
-      save() {
-        this.$refs.user.validate(valid => {
-          if(valid) {
-            let form = this.user
-            delete form.loginTime
-            form.oldRids = this.oldRids
-            form.newRids = this.newRids
-            saveUser(form).then(resp => {
-              if(resp && resp.success) {
-                this.$message({
-                  message: '保存成功',
-                  type: 'success'
-                })
-                this.editModalVisible = false
-                this.initUser()
-              }
-            })
-          }
-        })
       },
       //查看
       show() {
@@ -251,18 +120,11 @@
           })
           return
         }
-        this.title = '查看用户信息'
         this.user = this.currentRow
-        listRelByUid(this.currentRow.id).then(resp => {
-          if(resp && resp.success) {
-            this.newRids = resp.data
-          }
-        })
         this.showModalVisible = true
       },
       //添加
       add() {
-        this.title = '添加用户信息'
         this.empty()
         this.editModalVisible = true
       },
@@ -275,14 +137,7 @@
           })
           return
         }
-        this.title = '修改用户信息'
         this.user = this.currentRow
-        listRelByUid(this.currentRow.id).then(resp => {
-          if(resp && resp.success) {
-            this.newRids = resp.data
-            this.oldRids = resp.data
-          }
-        })
         this.editModalVisible = true
       },
       //删除
