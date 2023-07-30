@@ -6,7 +6,7 @@
         <el-button type="primary" icon="el-icon-search">搜索</el-button>
       </div>
       <div>
-        <el-button v-for="item in btnList" :key="item.id" :type="item.type" :icon="item.icon" @click="handler(item.func)">
+        <el-button v-for="item in btnList" :key="item.id" :type="item.color" :icon="item.icon" @click="handler(item.name)">
           {{ item.title }}
         </el-button>
       </div>
@@ -17,10 +17,10 @@
         row-key="id" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" default-expand-all
         highlight-current-row @current-change="selectCurrentRow">
         <el-table-column type="selection" width="50" />
-        <el-table-column prop="url" label="请求路径" />
-        <el-table-column prop="path" label="路由地址" />
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="title" label="标题" />
+        <el-table-column prop="path" label="路由地址" />
+        <el-table-column prop="url" label="组件路径" />
         <el-table-column label="图标">
           <template slot-scope="scope">
             <i :class="scope.row.icon" />
@@ -39,22 +39,38 @@
       <el-dialog :title="title" :visible.sync="showModalVisible" width="60%">
         <el-descriptions :column="2" border>
           <el-descriptions-item>
-            <template slot="label">名称</template>{{ authority.name }}
+            <template slot="label">名称</template>
+            <span>{{ authority.name }}</span>
           </el-descriptions-item>
           <el-descriptions-item>
-            <template slot="label">标题</template>{{ authority.title }}
+            <template slot="label">标题</template>
+            <span>{{ authority.title }}</span>
           </el-descriptions-item>
           <el-descriptions-item>
-            <template slot="label">路由地址</template>{{ authority.path }}
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">请求路径</template>{{ authority.url }}
-          </el-descriptions-item>
-          <el-descriptions-item>
-            <template slot="label">图标</template><i :class="authority.icon" />
+            <template slot="label">菜单类型</template>
+            <span v-if="authority.type == '0'">系统菜单</span>
+            <span v-else-if="authority.type == '1'">目录</span>
+            <span v-else-if="authority.type == '2'">菜单</span>
+            <span v-else-if="authority.type == '3'">按钮</span>
           </el-descriptions-item>
           <el-descriptions-item>
             <template slot="label">父菜单</template>{{ authority.parentTitle }}
+          </el-descriptions-item>
+          <el-descriptions-item v-if="authority.type == '2'">
+            <template slot="label">路由地址</template>
+            <span>{{ authority.path }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item v-if="authority.type == '2'">
+            <template slot="label">组件路径</template>
+            <span>{{ authority.url }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item v-if="authority.type == '3'">
+            <template slot="label">颜色</template>
+            <span>{{ authority.color }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item v-if="authority.type == '3'">
+            <template slot="label">图标</template>
+            <i :class="authority.icon" />
           </el-descriptions-item>
         </el-descriptions>
       </el-dialog>
@@ -76,23 +92,42 @@
                   prefix-icon="el-icon-edit" style="width: 80%" />
               </el-form-item>
             </el-col>
-            <el-col :span="12" v-show="authority.isMenu">
+            <el-col :span="12">
+              <el-form-item prop="type" label="类型">
+                <el-select v-model="authority.type" placeholder="请选择" style="width: 80%">
+                  <el-option
+                    v-for="(item, index) in typeOptions"
+                    :key="index"
+                    :label="item.name"
+                    :value="item.code"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="父菜单">
+                <el-input v-model="authority.parentTitle" style="width: 80%" readonly />
+                <input v-model="authority.parentId" type="hidden" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-show="authority.type == '2'">
               <el-form-item prop="path" label="路由地址">
                 <el-input v-model="authority.path" placeholder="请输入路由地址"
                   prefix-icon="el-icon-edit" style="width: 80%" />
               </el-form-item>
             </el-col>
-            <el-col :span="12" v-show="authority.isMenu">
-              <el-form-item prop="url" label="请求路径">
-                <el-input v-model="authority.url" placeholder="请输入请求路径"
+            <el-col :span="12" v-show="authority.type == '2'">
+              <el-form-item prop="url" label="组件路径">
+                <el-input v-model="authority.url" placeholder="请输入组件路径"
                   prefix-icon="el-icon-edit" style="width: 80%" />
               </el-form-item>
             </el-col>
-            <el-col :span="12" v-show="!authority.isMenu">
-              <el-form-item prop="type" label="按钮类型">
-                <el-select v-model="authority.type" placeholder="请选择" style="width: 80%">
+            <el-col :span="12" v-show="authority.type == '3'">
+              <el-form-item prop="color" label="颜色">
+                <el-select v-model="authority.color" placeholder="请选择" style="width: 80%">
                   <el-option
-                    v-for="(item, index) in typeOptions"
+                    v-for="(item, index) in colorOptions"
                     :key="index"
                     :label="item"
                     :value="item"
@@ -101,7 +136,7 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12" v-show="!authority.isMenu">
+            <el-col :span="12" v-show="authority.type == '3'">
               <el-form-item prop="icon" label="图标">
                 <el-select v-model="authority.icon" placeholder="请选择" style="width: 80%">
                   <el-option
@@ -113,23 +148,6 @@
                     <span class="span-l">{{ item }}</span><span class="span-r"><i :class="item" /></span>
                   </el-option>
                 </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" v-show="!authority.isMenu">
-              <el-form-item prop="func" label="方法">
-                <el-input v-model="authority.func" placeholder="请输入方法"
-                  prefix-icon="el-icon-edit" style="width: 80%" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="父菜单">
-                <el-input v-model="authority.parentTitle" style="width: 80%" readonly />
-                <input v-model="authority.parentId" type="hidden" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item prop="isMenu" label="是否菜单">
-                <el-switch v-model="authority.isMenu" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -160,27 +178,25 @@
         title: '',
         showModalVisible: false,
         editModalVisible: false,
-        typeOptions: ['primary', 'success', 'warning', 'danger'],
+        typeOptions: [{name: '目录', code: '1'}, {name: '菜单', code: '2'}, {name: '按钮', code: '3'}],
+        colorOptions: ['primary', 'success', 'warning', 'danger'],
         iconOptions: ['el-icon-view', 'el-icon-plus', 'el-icon-edit', 'el-icon-delete'],
         authority: {
-          url: '',
-          path: '',
           name: '',
           title: '',
-          component: '',
+          url: '',
+          path: '',
+          color: '',
           icon: '',
-          parentId: '',
-          isMenu: true,
           type: '',
-          func: '',
+          parentId: '',
           status: 0
         },
         rules: {
-          url: null,
-          path: null,
           name: [{required: true, message: '请输入名称', trigger: 'blur'}],
           title: [{required: true, message: '请输入标题', trigger: 'blur'}],
-          component: null,
+          url: null,
+          path: null,
           icon: null,
           parentId: null
         }
@@ -191,14 +207,14 @@
       this.initAuthority()
     },
     methods: {
-      handler(func) {
-        this[func]()
+      handler(name) {
+        this[name]()
       },
       selectCurrentRow(val) {
         this.currentRow = val
       },
       initBtn() {
-        this.btnList = this.$store.state.others
+        this.btnList = this.$route.meta || []
       },
       initAuthority() {
         this.loading = true
@@ -212,14 +228,14 @@
       },
       empty() {
         this.authority = {
-          url: '',
-          path: '',
           name: '',
           title: '',
-          component: '',
-          iconCls: '',
+          url: '',
+          path: '',
+          color: '',
+          icon: '',
+          type: '',
           parentId: 0,
-          isMenu: true,
           status: false
         }
       },
@@ -273,7 +289,7 @@
         this.title = '添加权限信息'
         this.empty()
         if (this.currentRow != null) {
-          if (!this.currentRow.isMenu) {
+          if (this.currentRow.type == '3') {
             this.$message({
               message: '请选择菜单',
               type: 'warning'

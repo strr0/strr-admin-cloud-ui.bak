@@ -32,7 +32,7 @@ export default {
     item: {
       handler (newV) {
         if (newV && newV.children && newV.children.length > 0) {
-          var bar = this.$refs.bar
+          let bar = this.$refs.bar
           if (bar) {
             bar.activeIndex = '0'
           }
@@ -45,8 +45,6 @@ export default {
     return {
       active: null
     }
-  },
-  methods: {
   }
 }
 </script>

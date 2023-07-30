@@ -8,7 +8,7 @@
         </template>
         <s-sidebar :items="item.children" class="nest-menu" />
       </el-submenu>
-      <el-menu-item :key="index" :index="index+''" :route="{path: item.path}" @click="handleClick(item)" v-else>
+      <el-menu-item :key="index" :index="index+''" :route="{path: item.path}" v-else>
         <i class="el-icon-setting"></i>
         <span>{{ item.title }}</span>
       </el-menu-item>
@@ -35,20 +35,8 @@ export default {
           this.$router.push({path: newV[0].path})
         }
       },
-      deep: true
-    }
-  },
-  created() {
-    // 默认勾选第一个二级菜单
-    if (this.items && this.items.length > 0) {
-      let item = this.items[0]
-      this.$store.commit('setOthers', item.others)
-      this.$router.push({path: item.path})
-    }
-  },
-  methods: {
-    handleClick(item) {
-      this.$store.commit('setOthers', item.others)
+      deep: true,
+      immediate: true
     }
   }
 }

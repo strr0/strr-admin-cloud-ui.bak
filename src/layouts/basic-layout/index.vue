@@ -51,7 +51,7 @@ export default {
     }
   },
   watch: {
-    '$store.state.routes': {
+    '$store.state.menus': {
       handler (newV) {
         this.routes = newV
         // 默认勾选第一个一级菜单

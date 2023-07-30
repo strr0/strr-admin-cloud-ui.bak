@@ -6,7 +6,7 @@
         <el-button type="primary" icon="el-icon-search">搜索</el-button>
       </div>
       <div>
-        <el-button v-for="item in btnList" :key="item.id" :type="item.type" :icon="item.icon" @click="handler(item.func)">
+        <el-button v-for="item in btnList" :key="item.id" :type="item.color" :icon="item.icon" @click="handler(item.name)">
           {{ item.title }}
         </el-button>
       </div>
@@ -179,8 +179,8 @@
       this.initRole()
     },
     methods: {
-      handler(func) {
-        this[func]()
+      handler(name) {
+        this[name]()
       },
       selectCurrentRow(val) {
         this.currentRow = val
@@ -190,7 +190,7 @@
         this.initUser()
       },
       initBtn() {
-        this.btnList = this.$store.state.others
+        this.btnList = this.$route.meta || []
       },
       initUser() {
         this.loading = true

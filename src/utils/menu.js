@@ -3,7 +3,7 @@ import { userMenuTree } from '../apis/admin'
 import { AdminMenu } from '../views'
 
 export const initMenu = (router, store) => {
-  if(store.state.routes.length > 0) {
+  if(store.state.menus.length > 0) {
     return  
   }
   userMenuTree().then(resp => {
@@ -35,14 +35,14 @@ export const buildMenuTree = (menus, routes) => {
 
 export const buildMenuNode = (menu, curRoutes) => {
   let children = []
-  let others = []
+  let meta = []
   if (menu.children && menu.children instanceof Array) {
     menu.children.forEach(child => {
       // 是否菜单
-      if (child.isMenu) {
+      if (child.type != '3') {
         children.push(buildMenuNode(child, curRoutes))
       } else {
-        others.push(child)
+        meta.push(child)
       }
     })
   }
@@ -51,20 +51,24 @@ export const buildMenuNode = (menu, curRoutes) => {
     name: menu.name,
     title: menu.title,
     iconCls: menu.icon,
-    others: others,
+    meta: meta,
     children: children
   }
-  if (children.length == 0) {
-    // 路由
-    if (menu.type == 'admin') {
+  switch (menu.type) {
+    // 系统菜单
+    case '0':
       node.component = AdminMenu[menu.name] || AdminMenu['404']
-    } else if (menu.url) {
+      curRoutes.push(node)
+      break
+    // 用户菜单
+    case '2':
       node.component = resolve => {
-        require(['../views' + menu.url + '/index.vue'], resolve)
+        require(['@/views' + menu.url + '/index.vue'], resolve)
       }
-    }
-    curRoutes.push(node)
+      curRoutes.push(node)
+      break
+    default:
+      break
   }
-  
   return node
 }
