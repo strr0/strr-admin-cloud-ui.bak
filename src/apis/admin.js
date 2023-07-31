@@ -3,8 +3,10 @@ import request from './index'
 const BASE = '/api/adminservice'
 
 // 权限
-export const listAuthority = () => {
-  return request.get(BASE + '/admin/sysAuthority/menuTree')
+export const listAuthority = (params) => {
+  return request.get(BASE + '/admin/sysAuthority/menuTree', {
+    params: params
+  })
 }
 
 export const userMenuTree = () => {

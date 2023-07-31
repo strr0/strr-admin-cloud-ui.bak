@@ -2,8 +2,8 @@
   <div>
     <div style="display: flex; justify-content: space-between; margin-top: 10px">
       <div>
-        <el-input prefix-icon="el-icon-search" style="width: 350px; margin-right: 10px" />
-        <el-button type="primary" icon="el-icon-search">搜索</el-button>
+        <el-input v-model="keyword" clearable prefix-icon="el-icon-search" style="width: 350px; margin-right: 10px" />
+        <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
       </div>
       <div>
         <el-button v-for="item in btnList" :key="item.id" :type="item.color" :icon="item.icon" @click="handler(item.name)">
@@ -54,6 +54,7 @@
     data() {
       return {
         loading: false,
+        keyword: null,
         page: 0,
         size: 10,
         total: 0,
@@ -90,15 +91,23 @@
       initBtn() {
         this.btnList = this.$route.meta || []
       },
-      initUser() {
+      search() {
         this.loading = true
-        pageUser({page: this.page, size: this.size}).then(resp => {
+        pageUser({
+          nickname: this.keyword,
+          page: this.page,
+          size: this.size
+        }).then(resp => {
           this.loading = false
           if(resp) {
             this.userList = resp.content
             this.total = resp.total
           }
         })
+      },
+      initUser() {
+        this.keyword = null
+        this.search()
       },
       empty() {
         this.user = {

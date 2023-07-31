@@ -9,8 +9,8 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item prop="remark" label="角色描述">
-            <el-input v-model="role.remark" placeholder="请输入角色描述"
+          <el-form-item prop="title" label="角色描述">
+            <el-input v-model="role.title" placeholder="请输入角色描述"
               prefix-icon="el-icon-edit" style="width: 80%" />
           </el-form-item>
         </el-col>
@@ -37,7 +37,7 @@ export default {
       default: {
         id: '',
         name: '',
-        remark: '',
+        title: '',
         status: false
       }
     },
@@ -63,7 +63,7 @@ export default {
       title: null,
       rules: {
         name: [{required: true, message: '请输入角色名称', trigger: 'blur'}],
-        remark: [{required: true, message: '请输入角色描述', trigger: 'blur'}]
+        title: [{required: true, message: '请输入角色描述', trigger: 'blur'}]
       }
     }
   },

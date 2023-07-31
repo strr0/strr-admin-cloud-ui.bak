@@ -2,8 +2,8 @@
   <div>
     <div style="display: flex; justify-content: space-between; margin-top: 10px">
       <div>
-        <el-input prefix-icon="el-icon-search" style="width: 350px; margin-right: 10px" />
-        <el-button type="primary" icon="el-icon-search">搜索</el-button>
+        <el-input v-model="keyword" clearable prefix-icon="el-icon-search" style="width: 350px; margin-right: 10px" />
+        <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
       </div>
       <div>
         <el-button v-for="item in btnList" :key="item.id" :type="item.color" :icon="item.icon" @click="handler(item.name)">
@@ -17,7 +17,7 @@
         highlight-current-row @current-change="selectCurrentRow">
         <el-table-column type="selection" />
         <el-table-column prop="name" label="角色名称" />
-        <el-table-column prop="remark" label="角色描述" />
+        <el-table-column prop="title" label="角色描述" />
         <el-table-column label="状态">
           <template slot-scope="scope">
             <el-switch v-model="scope.row.status" />
@@ -49,8 +49,8 @@
     components: { RoleEdit, RoleAlloc },
     data() {
       return {
-        //角色列表
         loading: false,
+        keyword: null,
         page: 0,
         size: 10,
         total: 0,
@@ -61,7 +61,7 @@
         allocModalVisible: false,
         role: {
           name: '',
-          remark: '',
+          title: '',
           status: false
         }
       }
@@ -84,9 +84,13 @@
       initBtn() {
         this.btnList = this.$route.meta || []
       },
-      initRole() {
+      search() {
         this.loading = true
-        pageRole({page: this.page, size: this.size}).then(resp => {
+        pageRole({
+          title: this.keyword,
+          page: this.page,
+          size: this.size
+        }).then(resp => {
           this.loading = false
           if(resp) {
             this.roleList = resp.content
@@ -94,10 +98,14 @@
           }
         })
       },
+      initRole() {
+        this.keyword = null
+        this.search()
+      },
       empty() {
         this.role = {
           name: '',
-          remark: '',
+          title: '',
           status: false
         }
       },

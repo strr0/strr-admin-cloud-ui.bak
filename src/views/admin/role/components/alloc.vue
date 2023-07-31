@@ -30,7 +30,7 @@ export default {
       default: {
         id: '',
         name: '',
-        remark: '',
+        title: '',
         status: false
       }
     },
