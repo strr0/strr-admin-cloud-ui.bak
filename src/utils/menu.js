@@ -50,7 +50,8 @@ export const buildMenuNode = (menu, curRoutes) => {
     path: menu.path,
     name: menu.name,
     title: menu.title,
-    iconCls: menu.icon,
+    icon: menu.icon,
+    type: menu.type,
     meta: meta,
     children: children
   }
