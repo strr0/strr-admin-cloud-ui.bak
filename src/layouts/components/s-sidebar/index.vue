@@ -8,7 +8,7 @@
         </template>
         <s-sidebar :items="item.children" class="nest-menu" />
       </el-submenu>
-      <el-menu-item :key="index" :idnex="index+''" :route="{path: item.path}" v-else-if="item.type == '0' || item.type == '2'">
+      <el-menu-item :key="index" :index="index+''" :route="{path: item.path}" v-else-if="item.type == '0' || item.type == '2'">
         <i class="el-icon-setting"></i>
         <span>{{ item.title }}</span>
       </el-menu-item>

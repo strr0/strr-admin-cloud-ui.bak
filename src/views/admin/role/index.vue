@@ -79,7 +79,7 @@
       },
       pageChange(page) {
         this.page = page - 1
-        this.initUser();
+        this.initRole();
       },
       initBtn() {
         this.btnList = this.$route.meta || []

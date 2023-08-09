@@ -3,7 +3,7 @@
     <el-header class="header">
       <el-row>
         <el-col :span="22">
-          <s-navbar :items="routes" :active="active" @showSub="showSub" />
+          <s-navbar :items="menus" :active="active" @showSub="showSub" />
         </el-col>
         <el-col :span="2">
           <el-dropdown class="settings" @command='commandHandler'>
@@ -29,7 +29,7 @@
       </el-row>
     </el-header>
     <el-container>
-      <s-main :item="currentRoute" />
+      <s-main :item="currentMenu" />
     </el-container>
   </el-container>
 </template>
@@ -44,8 +44,8 @@ export default {
   components: { SNavbar, SMain },
   data() {
     return {
-      routes: [],
-      currentRoute: null,
+      menus: [],
+      currentMenu: null,
       active: null,
       username: ''
     }
@@ -53,15 +53,15 @@ export default {
   watch: {
     '$store.state.menus': {
       handler (newV) {
-        this.routes = newV
+        this.menus = newV
         // 默认勾选第一个一级菜单
         if (newV.length > 0) {
           this.active = '0'
-          this.currentRoute = newV[0]
+          this.currentMenu = newV[0]
         }
       },
       deep: true,
-      immediate: true
+      // immediate: true
     }
   },
   mounted() {
@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     showSub(item) {
-      this.currentRoute = item
+      this.currentMenu = item
     },
     commandHandler(cmd) {
       switch(cmd) {
