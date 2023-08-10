@@ -29,7 +29,7 @@
       </el-row>
     </el-header>
     <el-container>
-      <s-main :item="currentMenu" />
+      <s-main :item="currentMenu" :sidebarActive="sidebarActive" />
     </el-container>
   </el-container>
 </template>
@@ -39,6 +39,8 @@ import SNavbar from '../components/s-navbar'
 import SMain from '../components/s-main'
 import { securityLogout } from '../../apis/auth'
 import { setCookie, getCookie } from '../../utils/auth'
+import { getDefaultMenu } from '../../utils/menu'
+
 export default {
   name: 'BasicLayout',
   components: { SNavbar, SMain },
@@ -47,6 +49,7 @@ export default {
       menus: [],
       currentMenu: null,
       active: null,
+      sidebarActive: null,
       username: ''
     }
   },
@@ -58,6 +61,12 @@ export default {
         if (newV.length > 0) {
           this.active = '0'
           this.currentMenu = newV[0]
+          // 获取第一个子菜单
+          let defaultMenu = getDefaultMenu(newV[0])
+          if (defaultMenu.type == '1') {
+            this.sidebarActive = defaultMenu.id + ''
+            this.$router.push({ path: defaultMenu.path })
+          }
         }
       },
       deep: true,

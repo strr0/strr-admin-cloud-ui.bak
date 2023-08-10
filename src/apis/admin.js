@@ -74,3 +74,10 @@ export const listRelByUid = id => {
 export const removeUser = id => {
   return request.delete(BASE + '/admin/sysUser/removeInfo?id=' + id)
 }
+
+// 属性
+export const listApplication = params => {
+  return request.get(BASE + '/admin/sysProperties/listApplication', {
+    params: params
+  })
+}

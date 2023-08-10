@@ -2,7 +2,7 @@
   <el-container>
     <template v-if="item && item.children">
       <el-aside style="background: #ececec">
-        <el-menu default-active="0" ref="bar" router>
+        <el-menu :default-active="sidebarActive" ref="bar" router>
           <s-sidebar :items="item.children" />
         </el-menu>
       </el-aside>
@@ -26,24 +26,10 @@ export default {
     item: {
       type: Object,
       default: () => {}
-    }
-  },
-  watch: {
-    item: {
-      handler (newV) {
-        if (newV && newV.children && newV.children.length > 0) {
-          let bar = this.$refs.bar
-          if (bar) {
-            bar.activeIndex = '0'
-          }
-        }
-      },
-      deep: true
-    }
-  },
-  data() {
-    return {
-      active: null
+    },
+    sidebarActive: {
+      type: String,
+      default: null
     }
   }
 }

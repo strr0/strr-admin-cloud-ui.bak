@@ -39,7 +39,7 @@ export const buildMenuNode = (menu, curRoutes) => {
   if (menu.children && menu.children instanceof Array) {
     menu.children.forEach(child => {
       // 是否菜单
-      if (child.type != '3') {
+      if (child.type != '2') {
         children.push(buildMenuNode(child, curRoutes))
       } else {
         meta.push(child)
@@ -47,6 +47,7 @@ export const buildMenuNode = (menu, curRoutes) => {
     })
   }
   let node = {
+    id: menu.id,
     path: menu.path,
     name: menu.name,
     title: menu.title,
@@ -55,21 +56,29 @@ export const buildMenuNode = (menu, curRoutes) => {
     meta: meta,
     children: children
   }
-  switch (menu.type) {
+  if (menu.type == '1' || menu.type == '3') {
     // 系统菜单
-    case '0':
+    if (menu.sys == '1') {
       node.component = AdminMenu[menu.name] || AdminMenu['404']
-      curRoutes.push(node)
-      break
     // 用户菜单
-    case '2':
+    } else {
       node.component = resolve => {
         require(['@/views' + menu.url + '/index.vue'], resolve)
       }
+    }
+    if (menu.type == '1') {
       curRoutes.push(node)
-      break
-    default:
-      break
+    }
   }
   return node
+}
+
+export const getDefaultMenu = menu => {
+  let children = menu.children
+  if (children && children.length > 0) {
+    for (let child of children) {
+      return getDefaultMenu(child)
+    }
+  }
+  return menu
 }
