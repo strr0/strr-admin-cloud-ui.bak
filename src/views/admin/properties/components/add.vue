@@ -1,16 +1,16 @@
 <template>
-  <el-dialog :title="title" :visible.sync="editModalVisible" :before-close="close" width="60%">
-    <el-form :model="role" ref="role" :rules="rules" label-position="left">
+  <el-dialog :title="title" :visible.sync="addModalVisible" :before-close="close" width="60%">
+    <el-form :model="properties" ref="properties" :rules="rules" label-position="left">
       <el-row>
         <el-col :span="12">
-          <el-form-item prop="name" label="角色名称">
-            <el-input v-model="role.name" placeholder="请输入角色名称"
+          <el-form-item prop="application" label="应用">
+            <el-input v-model="properties.application" placeholder="请输入应用"
               prefix-icon="el-icon-edit" style="width: 80%" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item prop="title" label="角色描述">
-            <el-input v-model="role.title" placeholder="请输入角色描述"
+          <el-form-item prop="profile" label="环境">
+            <el-input v-model="properties.profile" placeholder="请输入环境"
               prefix-icon="el-icon-edit" style="width: 80%" />
           </el-form-item>
         </el-col>
@@ -25,34 +25,22 @@
 
 <script>
 import {
-  saveRole,
-  updateRole
+  batchSaveProperties
 } from '../../../../apis/admin'
 
 export default {
   name: 'PropertiesAdd',
   props: {
-    role: {
-      type: Object,
-      default: {
-        id: '',
-        name: '',
-        title: '',
-        status: false
-      }
-    },
-    editModalVisible: {
+    addModalVisible: {
       type: Boolean,
       default: false
     }
   },
   watch: {
-    editModalVisible: {
+    addModalVisible: {
       handler (newV) {
-        if (this.role.id) {
-          this.title = '修改角色信息'
-        } else {
-          this.title = '添加角色信息'
+        if (newV) {
+          this.empty()
         }
       },
       deep: true
@@ -61,39 +49,35 @@ export default {
   data() {
     return {
       title: '添加配置信息',
+      properties: {
+        application: null,
+        profile: null
+      },
       rules: {
-        name: [{required: true, message: '请输入角色名称', trigger: 'blur'}],
-        title: [{required: true, message: '请输入角色描述', trigger: 'blur'}]
+        application: [{required: true, message: '请输入应用', trigger: 'blur'}]
       }
     }
   },
   methods: {
+    empty() {
+      this.properties = {
+        application: null,
+        profile: null
+      }
+    },
     save() {
-      this.$refs.role.validate(valid => {
+      this.$refs.properties.validate(valid => {
         if(valid) {
-          if (this.role.id) {
-            updateRole(this.role).then(resp => {
-              if(resp && resp.success) {
-                this.$message({
-                  message: '修改成功',
-                  type: 'success'
-                })
-                this.$emit('refresh')
-                this.close()
-              }
-            })
-          } else {
-            saveRole(this.role).then(resp => {
-              if(resp && resp.success) {
-                this.$message({
-                  message: '保存成功',
-                  type: 'success'
-                })
-                this.$emit('refresh')
-                this.close()
-              }
-            })
-          }
+          // batchSaveProperties(this.dataList).then(resp => {
+          //   if(resp && resp.success) {
+          //     this.$message({
+          //       message: '保存成功',
+          //       type: 'success'
+          //     })
+          //     this.$emit('refresh')
+          //     this.close()
+          //   }
+          // })
         }
       })
     },

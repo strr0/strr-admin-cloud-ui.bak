@@ -20,22 +20,28 @@
         <el-table-column prop="profile" label="环境" />
       </el-table>
     </div>
+    <!--  新增  -->
+    <properties-add :addModalVisible="addModalVisible" @cancel="addModalVisible = false" />
   </div>
 </template>
 
 <script>
   import {
-    listApplication
+    listApplication,
+    batchRemoveProperties
   } from '../../../apis/admin'
+  import PropertiesAdd from './components/add.vue'
 
   export default {
     name: 'Properties',
+    components: { PropertiesAdd },
     data() {
       return {
         loading: false,
         keyword: null,
         btnList: [],
-        propertiesList: []
+        propertiesList: [],
+        addModalVisible: false
       }
     },
     mounted() {
@@ -69,7 +75,7 @@
       },
       //添加
       add() {
-        // this.editModalVisible = true
+        this.addModalVisible = true
       },
       show() {
         if (this.currentRow == null) {
@@ -100,7 +106,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          // removeRole(this.currentRow.id).then((resp) => {
+          // batchRemoveProperties(this.currentRow.application).then((resp) => {
           //   if (resp) {
           //     this.$message({
           //       message: '删除成功',
