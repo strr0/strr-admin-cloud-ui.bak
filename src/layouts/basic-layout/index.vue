@@ -29,7 +29,7 @@
       </el-row>
     </el-header>
     <el-container>
-      <s-main :item="currentMenu" :sidebarActive="sidebarActive" />
+      <s-main :item="currentMenu" />
     </el-container>
   </el-container>
 </template>
@@ -49,7 +49,6 @@ export default {
       menus: [],
       currentMenu: null,
       active: null,
-      sidebarActive: null,
       username: ''
     }
   },
@@ -62,10 +61,13 @@ export default {
           this.active = '0'
           this.currentMenu = newV[0]
           // 获取第一个子菜单
-          let defaultMenu = getDefaultMenu(newV[0])
-          if (defaultMenu.type == '1') {
-            this.sidebarActive = defaultMenu.id + ''
-            this.$router.push({ path: defaultMenu.path })
+          let route = this.$router.currentRoute
+          if (route.name == 'Home') {
+            let defaultMenu = getDefaultMenu(newV[0])
+            if (defaultMenu.type == '1') {
+              this.sidebarActive = defaultMenu.id + ''
+              this.$router.push({ path: defaultMenu.path })
+            }
           }
         }
       },

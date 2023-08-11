@@ -6,7 +6,7 @@
         <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
       </div>
       <div>
-        <el-button v-for="item in btnList" :key="item.id" :type="item.color" :icon="item.icon" @click="handler(item.name)">
+        <el-button v-for="item in btnList" :key="item.id" :type="item.color" :icon="item.icon" @click="handler(item.func)">
           {{ item.title }}
         </el-button>
       </div>
@@ -43,14 +43,14 @@
       this.initProperties()
     },
     methods: {
-      handler(name) {
-        this[name]()
+      handler(func) {
+        this[func]()
       },
       selectCurrentRow(val) {
         this.currentRow = val
       },
       initBtn() {
-        this.btnList = this.$route.meta || []
+        this.btnList = this.$route.meta.buttons || []
       },
       search() {
         this.loading = true
@@ -69,8 +69,22 @@
       },
       //添加
       add() {
-        this.empty()
-        this.editModalVisible = true
+        // this.editModalVisible = true
+      },
+      show() {
+        if (this.currentRow == null) {
+          this.$message({
+            message: '请选择一项',
+            type: 'warning'
+          })
+          return
+        }
+        this.$router.push({
+          path: '/propertiesShow',
+          query: {
+            application: this.currentRow.application
+          }
+        })
       },
       //删除
       del() {
@@ -86,15 +100,15 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          removeRole(this.currentRow.id).then((resp) => {
-            if (resp) {
-              this.$message({
-                message: '删除成功',
-                type: 'success'
-              })
-              this.initRole()
-            }
-          })
+          // removeRole(this.currentRow.id).then((resp) => {
+          //   if (resp) {
+          //     this.$message({
+          //       message: '删除成功',
+          //       type: 'success'
+          //     })
+          //     this.initRole()
+          //   }
+          // })
         }).catch(() => {
           this.$message({
             message: '已取消',

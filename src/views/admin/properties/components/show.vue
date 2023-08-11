@@ -6,9 +6,7 @@
         <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
       </div>
       <div>
-        <el-button v-for="item in btnList" :key="item.id" :type="item.color" :icon="item.icon" @click="handler(item.name)">
-          {{ item.title }}
-        </el-button>
+        <el-button icon="el-icon-arrow-left" @click="$router.go(-1)">返回</el-button>
       </div>
     </div>
     <!--  应用列表  -->
@@ -18,9 +16,31 @@
         <el-table-column type="selection" />
         <el-table-column prop="application" label="应用" />
         <el-table-column prop="profile" label="环境" />
-        <el-table-column prop="key" label="键" />
-        <el-table-column prop="name" label="键名称" />
-        <el-table-column prop="value" label="值" />
+        <el-table-column label="键">
+          <template slot-scope="scope">
+            <el-input :value="scope.row.key" v-if="scope.row.editable" />
+            <span v-else>{{ scope.row.key }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="键名称">
+          <template slot-scope="scope">
+            <el-input :value="scope.row.name" v-if="scope.row.editable" />
+            <span v-else>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="值">
+          <template slot-scope="scope">
+            <el-input :value="scope.row.value" v-if="scope.row.editable" />
+            <span v-else>{{ scope.row.value }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button type="primary" icon="el-icon-edit" circle plain @click="scope.row.editable = true"></el-button>
+            <el-button type="success" icon="el-icon-check" circle plain @click="scope.row.editable = false"></el-button>
+            <el-button type="danger" icon="el-icon-delete" circle plain></el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
   </div>
@@ -28,21 +48,24 @@
 
 <script>
   import {
-    listApplication
+    listProperties
   } from '../../../../apis/admin'
 
   export default {
-    name: 'PropertiesItem',
+    name: 'PropertiesShow',
     data() {
       return {
         loading: false,
+        application: null,
         keyword: null,
         btnList: [],
         propertiesList: []
       }
     },
+    created() {
+      this.application = this.$route.query.application
+    },
     mounted() {
-      this.initBtn()
       this.initProperties()
     },
     methods: {
@@ -52,17 +75,19 @@
       selectCurrentRow(val) {
         this.currentRow = val
       },
-      initBtn() {
-        this.btnList = this.$route.meta || []
-      },
       search() {
         this.loading = true
-        listApplication({
-          application: this.keyword
+        listProperties({
+          application: this.application
         }).then(resp => {
           this.loading = false
           if(resp) {
-            this.propertiesList = resp.data
+            this.propertiesList = resp.data.map(item => {
+              return {
+                ...item,
+                editable: false
+              }
+            })
           }
         })
       },

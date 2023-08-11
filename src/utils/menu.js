@@ -21,11 +21,12 @@ export const buildMenuTree = (menus, routes) => {
   let tree = []
   menus.forEach(menu => {
     let curRoutes = []
-    let node = buildMenuNode(menu, curRoutes)
+    let node = buildMenuNode(menu, [], curRoutes)
     routes.push({
       path: node.path,
       name: node.name,
       component: BasicLayout,
+      meta: {id: '0'},
       children: curRoutes
     })
     tree.push(node)
@@ -33,44 +34,87 @@ export const buildMenuTree = (menus, routes) => {
   return tree
 }
 
-export const buildMenuNode = (menu, curRoutes) => {
+export const buildMenuNode = (menu, paths, curRoutes) => {
   let children = []
-  let meta = []
+  let buttons = []
   if (menu.children && menu.children instanceof Array) {
     menu.children.forEach(child => {
-      // 是否菜单
-      if (child.type != '2') {
-        children.push(buildMenuNode(child, curRoutes))
-      } else {
-        meta.push(child)
+      switch (child.type) {
+        // 按钮
+        case '2':
+          buttons.push({
+            ...child,
+            func: child.name
+          })
+          break
+        // 子路由
+        case '3':
+          buttons.push(buildMenuComponent({
+            ...child,
+            name: menu.name + child.name,
+            func: child.name,
+            meta: {
+              id: menu.id + '',
+              paths: [
+                ...paths,
+                {
+                  path: child.path,
+                  title: child.title
+                }
+              ]
+            }
+          }, curRoutes))
+          break
+        // 菜单树
+        default:
+          children.push(buildMenuNode(child, [
+            ...paths,
+            {
+              path: child.path,
+              title: child.title
+            }
+          ], curRoutes))
+          break
       }
     })
   }
-  let node = {
-    id: menu.id,
-    path: menu.path,
-    name: menu.name,
-    title: menu.title,
-    icon: menu.icon,
-    type: menu.type,
-    meta: meta,
+  return buildMenuComponent({
+    ...menu,
+    meta: {
+      id: menu.id + '',
+      buttons: buttons,
+      paths: paths
+    },
     children: children
-  }
-  if (menu.type == '1' || menu.type == '3') {
-    // 系统菜单
-    if (menu.sys == '1') {
-      node.component = AdminMenu[menu.name] || AdminMenu['404']
-    // 用户菜单
-    } else {
-      node.component = resolve => {
-        require(['@/views' + menu.url + '/index.vue'], resolve)
+  }, curRoutes)
+}
+
+export const buildMenuComponent = (menu, curRoutes) => {
+  switch (menu.type) {
+    case '1':
+      if (menu.sys == '1') {
+        menu.component = AdminMenu[menu.name] || AdminMenu['404']
+      } else {
+        menu.component = resolve => {
+          require(['@/views' + menu.url + '/index.vue'], resolve)
+        }
       }
-    }
-    if (menu.type == '1') {
-      curRoutes.push(node)
-    }
+      curRoutes.push(menu)
+      break
+    case '3':
+      if (menu.sys == '1') {
+        menu.component = AdminMenu[menu.name] || AdminMenu['404']
+      } else {
+        menu.component = resolve => {
+          require(['@/views' + menu.url + '.vue'], resolve)
+        }
+      }
+      curRoutes.push(menu)
+      break
+    default:
+      break
   }
-  return node
+  return menu
 }
 
 export const getDefaultMenu = menu => {

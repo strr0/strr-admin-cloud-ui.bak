@@ -81,3 +81,9 @@ export const listApplication = params => {
     params: params
   })
 }
+
+export const listProperties = params => {
+  return request.get(BASE + '/admin/sysProperties/listProperties', {
+    params: params
+  })
+}

@@ -33,19 +33,19 @@
             <input v-model="authority.parentId" type="hidden" />
           </el-form-item>
         </el-col>
-        <el-col :span="12" v-show="authority.type == '1'">
+        <el-col :span="12" v-show="authority.type == '1' || authority.type == '3'">
           <el-form-item prop="path" label="路由地址">
             <el-input v-model="authority.path" placeholder="请输入路由地址"
               prefix-icon="el-icon-edit" style="width: 80%" />
           </el-form-item>
         </el-col>
-        <el-col :span="12" v-show="authority.type == '1'">
+        <el-col :span="12" v-show="authority.type == '1' || authority.type == '3'">
           <el-form-item prop="url" label="组件路径">
             <el-input v-model="authority.url" placeholder="请输入组件路径"
               prefix-icon="el-icon-edit" style="width: 80%" />
           </el-form-item>
         </el-col>
-        <el-col :span="12" v-show="authority.type == '2'">
+        <el-col :span="12" v-show="authority.type == '2' || authority.type == '3'">
           <el-form-item prop="color" label="颜色">
             <el-select v-model="authority.color" placeholder="请选择" style="width: 80%">
               <el-option
@@ -58,7 +58,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="12" v-show="authority.type == '2'">
+        <el-col :span="12" v-show="authority.type == '2' || authority.type == '3'">
           <el-form-item prop="icon" label="图标">
             <el-select v-model="authority.icon" placeholder="请选择" style="width: 80%">
               <el-option
@@ -124,7 +124,7 @@ export default {
   data() {
     return {
       title: null,
-      typeOptions: [{name: '目录', code: '0'}, {name: '菜单', code: '1'}, {name: '按钮', code: '2'}],
+      typeOptions: [{name: '目录', code: '0'}, {name: '菜单', code: '1'}, {name: '按钮', code: '2'}, {name: '子路由', code: '3'}],
       colorOptions: ['primary', 'success', 'warning', 'danger'],
       iconOptions: ['el-icon-view', 'el-icon-plus', 'el-icon-edit', 'el-icon-delete'],
       rules: {

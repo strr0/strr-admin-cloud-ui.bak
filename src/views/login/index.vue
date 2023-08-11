@@ -37,7 +37,7 @@ export default {
   mounted() {
     let user = getCookie('user')
     if (user) {
-      let path = this.$route.query.redirect;
+      let path = this.$route.query.redirect
       this.$router.replace((path == '/' || path == undefined) ? '/home' : path)
       return
     }
