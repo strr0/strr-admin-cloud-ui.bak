@@ -21,7 +21,7 @@
       </el-table>
     </div>
     <!--  新增  -->
-    <properties-add :addModalVisible="addModalVisible" @cancel="addModalVisible = false" />
+    <properties-add :addModalVisible="addModalVisible" @refresh="initProperties" @cancel="addModalVisible = false" />
   </div>
 </template>
 

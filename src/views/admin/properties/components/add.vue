@@ -14,6 +14,11 @@
               prefix-icon="el-icon-edit" style="width: 80%" />
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item prop="content" label="配置">
+            <el-input v-model="properties.content" type="textarea" :rows="2" placeholder="请输入配置" />
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -51,10 +56,12 @@ export default {
       title: '添加配置信息',
       properties: {
         application: null,
-        profile: null
+        profile: null,
+        content: null
       },
       rules: {
-        application: [{required: true, message: '请输入应用', trigger: 'blur'}]
+        application: [{required: true, message: '请输入应用', trigger: 'blur'}],
+        content: [{required: true, message: '请输入配置', trigger: 'blur'}]
       }
     }
   },
@@ -66,9 +73,24 @@ export default {
       }
     },
     save() {
+      let reg = new RegExp(/(\w+)=(\w+)/, 'gi')
+      let application = this.properties.application
+      let profile = this.properties.profile
       this.$refs.properties.validate(valid => {
         if(valid) {
-          // batchSaveProperties(this.dataList).then(resp => {
+          let dataList = []
+          this.properties.content.split('\n').forEach(item => {
+            item.replace(reg, (match, p1, p2) => {
+              dataList.push({
+                application: application,
+                profile: profile,
+                key: p1,
+                value: p2
+              })
+              return null
+            })
+          })
+          // batchSaveProperties(dataList).then(resp => {
           //   if(resp && resp.success) {
           //     this.$message({
           //       message: '保存成功',

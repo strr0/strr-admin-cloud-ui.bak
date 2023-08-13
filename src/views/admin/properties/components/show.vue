@@ -37,8 +37,8 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" circle plain @click="scope.row.editable = true"></el-button>
-            <el-button type="success" icon="el-icon-check" circle plain @click="scope.row.editable = false"></el-button>
-            <el-button type="danger" icon="el-icon-delete" circle plain></el-button>
+            <el-button type="success" icon="el-icon-check" circle plain @click="save(scope.row)"></el-button>
+            <el-button type="danger" icon="el-icon-delete" circle plain @click="del(scope.row.id)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -48,7 +48,10 @@
 
 <script>
   import {
-    listProperties
+    listProperties,
+    saveProperties,
+    updateProperties,
+    removeProperties
   } from '../../../../apis/admin'
 
   export default {
@@ -100,27 +103,41 @@
         this.empty()
         this.editModalVisible = true
       },
-      //删除
-      del() {
-        if (this.currentRow == null) {
-          this.$message({
-            message: '请选择一项',
-            type: 'warning'
+      save(properties) {
+        if (properties.id) {
+          updateProperties(properties).then(resp => {
+            if(resp && resp.success) {
+              this.$message({
+                message: '修改成功',
+                type: 'success'
+              })
+            }
           })
-          return
+        } else {
+          saveProperties(properties).then(resp => {
+            if(resp && resp.success) {
+              this.$message({
+                message: '保存成功',
+                type: 'success'
+              })
+            }
+          })
         }
+        properties.editable = false
+      },
+      //删除
+      del(id) {
         this.$confirm('此操作将永久删除此项, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          removeRole(this.currentRow.id).then((resp) => {
+          removeProperties(id).then((resp) => {
             if (resp) {
               this.$message({
                 message: '删除成功',
                 type: 'success'
               })
-              this.initRole()
             }
           })
         }).catch(() => {

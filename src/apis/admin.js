@@ -76,8 +76,20 @@ export const removeUser = id => {
 }
 
 // 属性
+export const saveProperties = params => {
+  return request.post(BASE + '/admin/sysProperties/save', params)
+}
+
 export const batchSaveProperties = params => {
   return request.post(BASE + '/admin/sysProperties/batchSave', params)
+}
+
+export const updateProperties = params => {
+  return request.put(BASE + '/admin/sysProperties/update', params)
+}
+
+export const removeProperties = id => {
+  return request.delete(BASE + '/admin/sysProperties/remove?id=' + id)
 }
 
 export const batchRemoveProperties = application => {
