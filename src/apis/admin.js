@@ -112,3 +112,8 @@ export const listProperties = params => {
     params: params
   })
 }
+
+// 服务
+export const listServer = () => {
+  return request.get('/api/actuator/gateway/routes')
+}

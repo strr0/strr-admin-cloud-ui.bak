@@ -1,4 +1,5 @@
 const AdminMenu = {
+  'Server': resolve => require(['./admin/server/index.vue'], resolve),
   'Properties': resolve => require(['./admin/properties/index.vue'], resolve),
   'PropertiesShow': resolve => require(['./admin/properties/components/show.vue'], resolve), 
   'User': resolve => require(['./admin/user/index.vue'], resolve),
