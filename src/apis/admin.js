@@ -81,7 +81,12 @@ export const saveProperties = params => {
 }
 
 export const batchSaveProperties = params => {
-  return request.post(BASE + '/admin/sysProperties/batchSave', params)
+  return request.post(BASE + '/admin/sysProperties/batchSave', params, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    transformRequest: [data => JSON.stringify(data)]
+  })
 }
 
 export const updateProperties = params => {

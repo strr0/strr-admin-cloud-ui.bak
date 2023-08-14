@@ -106,15 +106,15 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          // batchRemoveProperties(this.currentRow.application).then((resp) => {
-          //   if (resp) {
-          //     this.$message({
-          //       message: '删除成功',
-          //       type: 'success'
-          //     })
-          //     this.initRole()
-          //   }
-          // })
+          batchRemoveProperties(this.currentRow.application).then((resp) => {
+            if (resp) {
+              this.$message({
+                message: '删除成功',
+                type: 'success'
+              })
+              this.initProperties()
+            }
+          })
         }).catch(() => {
           this.$message({
             message: '已取消',

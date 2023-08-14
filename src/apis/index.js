@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
+import { setCookie } from '../utils/auth'
 
 const request = axios.create({
   headers: {
@@ -40,6 +41,7 @@ request.interceptors.response.use(
     }
   },
   error => {
+    setCookie('user', '')
     let response = error.response
     Message.error({message: response.data.message})
     return

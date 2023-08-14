@@ -18,27 +18,30 @@
         <el-table-column prop="profile" label="环境" />
         <el-table-column label="键">
           <template slot-scope="scope">
-            <el-input :value="scope.row.key" v-if="scope.row.editable" />
+            <el-input v-model="scope.row.key" v-if="scope.row.editable" />
             <span v-else>{{ scope.row.key }}</span>
           </template>
         </el-table-column>
         <el-table-column label="键名称">
           <template slot-scope="scope">
-            <el-input :value="scope.row.name" v-if="scope.row.editable" />
+            <el-input v-model="scope.row.name" v-if="scope.row.editable" />
             <span v-else>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
         <el-table-column label="值">
           <template slot-scope="scope">
-            <el-input :value="scope.row.value" v-if="scope.row.editable" />
+            <el-input v-model="scope.row.value" v-if="scope.row.editable" />
             <span v-else>{{ scope.row.value }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
+          <template slot="header">
+            <el-button type="primary" icon="el-icon-plus" circle plain @click="add"></el-button>
+          </template>
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" circle plain @click="scope.row.editable = true"></el-button>
             <el-button type="success" icon="el-icon-check" circle plain @click="save(scope.row)"></el-button>
-            <el-button type="danger" icon="el-icon-delete" circle plain @click="del(scope.row.id)"></el-button>
+            <el-button type="danger" icon="el-icon-delete" circle plain @click="del(scope.row.id, scope.$index)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -100,8 +103,13 @@
       },
       //添加
       add() {
-        this.empty()
-        this.editModalVisible = true
+        this.propertiesList.push({
+          application: this.application,
+          profile: null,
+          key: null,
+          value: null,
+          editable: true
+        })
       },
       save(properties) {
         if (properties.id) {
@@ -116,6 +124,7 @@
         } else {
           saveProperties(properties).then(resp => {
             if(resp && resp.success) {
+              this.initProperties()
               this.$message({
                 message: '保存成功',
                 type: 'success'
@@ -126,20 +135,23 @@
         properties.editable = false
       },
       //删除
-      del(id) {
+      del(id, index) {
         this.$confirm('此操作将永久删除此项, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          removeProperties(id).then((resp) => {
-            if (resp) {
-              this.$message({
-                message: '删除成功',
-                type: 'success'
-              })
-            }
-          })
+          if (id) {
+            removeProperties(id).then((resp) => {
+              if (resp) {
+                this.$message({
+                  message: '删除成功',
+                  type: 'success'
+                })
+              }
+            })
+          }
+          this.propertiesList.splice(index, 1)
         }).catch(() => {
           this.$message({
             message: '已取消',

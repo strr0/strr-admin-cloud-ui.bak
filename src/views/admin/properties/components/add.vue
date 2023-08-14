@@ -14,9 +14,9 @@
               prefix-icon="el-icon-edit" style="width: 80%" />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item prop="content" label="配置">
-            <el-input v-model="properties.content" type="textarea" :rows="2" placeholder="请输入配置" />
+            <el-input v-model="properties.content" type="textarea" :rows="5" placeholder="请输入配置" style="width: 90%" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -73,7 +73,7 @@ export default {
       }
     },
     save() {
-      let reg = new RegExp(/(\w+)=(\w+)/, 'gi')
+      let reg = new RegExp(/(.+)=(.+)/, 'gi')
       let application = this.properties.application
       let profile = this.properties.profile
       this.$refs.properties.validate(valid => {
@@ -90,16 +90,16 @@ export default {
               return null
             })
           })
-          // batchSaveProperties(dataList).then(resp => {
-          //   if(resp && resp.success) {
-          //     this.$message({
-          //       message: '保存成功',
-          //       type: 'success'
-          //     })
-          //     this.$emit('refresh')
-          //     this.close()
-          //   }
-          // })
+          batchSaveProperties(dataList).then(resp => {
+            if(resp && resp.success) {
+              this.$message({
+                message: '保存成功',
+                type: 'success'
+              })
+              this.$emit('refresh')
+              this.close()
+            }
+          })
         }
       })
     },
